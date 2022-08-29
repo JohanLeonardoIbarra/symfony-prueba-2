@@ -28,7 +28,7 @@ http://localhost/user/{id}
 ### Busca los pedidos por usuario 
 http://localhost/order/list/{email}
 ### Crea un nuevo pedido
-http://localhost/order/new
+http://localhost/order/new/{email}
 
 {
     "name": "johan",
