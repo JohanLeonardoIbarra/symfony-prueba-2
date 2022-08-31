@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Document\Order;
+use App\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,8 +20,13 @@ class UserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Order::class,
+            'data_class' => User::class,
             'csrf_protection' => false
         ]);
+    }
+
+    public function getBlockPrefix(): string
+    {
+        return '';
     }
 }

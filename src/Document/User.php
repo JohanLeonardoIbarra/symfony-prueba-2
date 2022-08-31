@@ -3,31 +3,34 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ODM\Document]
-#[UniqueEntity('email')]
+#[Unique('email')]
 class User
 {
     #[ODM\Id]
-    #[ODM\NotBlank]
-    #[ODM\NotNull]
     private string $id;
+
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Regex("/\d/", message: 'Your name cannot contain a number', match: false)]
     private string $name;
+
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Regex("/\d/", message: 'Your surname cannot contain a number', match: false)]
     private string $surname;
+
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Email]
     private string $email;
+
     #[ODM\Field(type: 'bool')]
     private bool $flag = false;
 
@@ -100,6 +103,7 @@ class User
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
         return $this;
     }
 
