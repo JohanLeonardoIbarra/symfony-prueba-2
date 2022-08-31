@@ -3,33 +3,36 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ODM\Document]
 class Order
 {
     #[ODM\Id]
-    #[ODM\NotBlank]
-    #[ODM\NotNull]
     #[Groups(['listOrder', 'showOrder'])]
     private string $id;
+
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Groups(['listOrder', 'showOrder'])]
     private string $productName;
+
     #[Assert\NotNull]
     #[Assert\Positive]
     #[Groups(['listOrder', 'showOrder'])]
     private int $quantity;
+
     #[Assert\NotNull]
     #[Assert\Positive]
     #[Groups(['listOrder', 'showOrder'])]
     private float $unitPrice;
+
     #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     #[Groups(['listOrder', 'showOrder'])]
     private float $discount;
-    #[ODM\Id]
+
     #[ODM\NotBlank]
     #[ODM\NotNull]
     private string $userId;
@@ -128,9 +131,6 @@ class Order
         return $this->userId;
     }
 
-    /**
-     * @param string $userId
-     */
     public function setUserId(string $userId): static
     {
         $this->userId = $userId;

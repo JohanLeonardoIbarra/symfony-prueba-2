@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Document\User;
 use App\Form\UserType;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('user')]
@@ -16,7 +18,7 @@ class UserController extends AbstractController
     #[Route('/list', name: 'app_user_list', methods: ['GET'])]
     public function index(DocumentManager $documentManager): JsonResponse
     {
-        $users = $documentManager->getRepostory(User::class)->find();
+        $users = $documentManager->getRepository(User::class)->findAll();
 
         return $this->json($users);
     }
@@ -31,26 +33,31 @@ class UserController extends AbstractController
         return $this->json($user);
     }
 
+    /**
+     * @throws MongoDBException
+     */
     #[Route('/new', name: 'app_user_new', methods: ['POST'])]
     public function create(Request $request, DocumentManager $documentManager): JsonResponse
     {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->submit($request->toArray());
+        $form = $this->createForm(UserType::class);
+        $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()){
+            $user = $form->getData();
             $documentManager->persist($user);
             $documentManager->flush();
 
-            return $this->json($user, 200);
+            return $this->json($user, Response::HTTP_CREATED);
         }
 
         $errors = $form->getErrors(true);
         $msg = [];
+
         foreach ($errors as $error) {
             $msg[] = $error->getMessage();
         }
 
-        return $this->json($msg, 400);
+        return $this->json($msg, Response::HTTP_BAD_REQUEST);
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['PUT'])]
