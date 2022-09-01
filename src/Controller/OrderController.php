@@ -17,24 +17,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class OrderController extends AbstractController
 {
     #[Route('/list/{email}', name: 'app_order_list', methods: ['GET'])]
-    public function index(User $user = null, DocumentManager $documentManager): JsonResponse
+    public function index(User $user, DocumentManager $documentManager): JsonResponse
     {
-        if (!$user) {
-            return $this->json(null, 404);
-        }
-
         $orders = $documentManager->getRepository()->findBy(['userId' => $user->getId()]);
 
         return $this->json($orders);
     }
 
     #[Route('{id}', name: 'app_order_find', methods: ['GET'])]
-    public function find(Order $order = null): JsonResponse
+    public function find(Order $order): JsonResponse
     {
-        if (!$order) {
-            return $this->json(null, 404);
-        }
-
         return $this->json($order);
     }
 
@@ -69,12 +61,8 @@ class OrderController extends AbstractController
 
     #[Route('/{id}/edit/{email}', name: 'app_user_edit', methods: ['PUT'])]
     #[Entity('user', expr: 'repository.findBy([$email])')]
-    public function edit(Order $order = null, User $user = null, Request $request, DocumentManager $documentManager): JsonResponse
+    public function edit(Order $order, User $user, Request $request, DocumentManager $documentManager): JsonResponse
     {
-        if (!$user || !$order) {
-            return $this->json(null, 404);
-        }
-
         $order->setUserId($user->getId());
         $form = $this->createForm(OrderType::class, $order);
         $form->submit($request->toArray());

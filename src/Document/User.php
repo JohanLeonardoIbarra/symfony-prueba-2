@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User
 {
     #[ODM\Id]
-    private string $id;
+    private $id;
 
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
@@ -32,23 +32,24 @@ class User
     private string $email;
 
     #[ODM\Field(type: 'bool')]
-    private bool $flag = false;
+    #[Assert\NotNull]
+    private bool $firstBuy = false;
 
     /**
      * @return bool
      */
-    public function isFlag(): bool
+    public function isFirstBuy(): bool
     {
-        return $this->flag;
+        return $this->firstBuy;
     }
 
     /**
-     * @param bool $flag
+     * @param bool $firstBuy
      * @return User
      */
-    public function setFlag(bool $flag): User
+    public function setFirstBuy(bool $firstBuy): User
     {
-        $this->flag = $flag;
+        $this->firstBuy = $firstBuy;
         return $this;
     }
 
@@ -107,10 +108,7 @@ class User
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getId(): string
+    public function getId()
     {
         return $this->id;
     }

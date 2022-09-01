@@ -6,6 +6,7 @@ use App\Document\User;
 use App\Form\UserType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,12 +25,9 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_find', methods: ['GET'])]
-    public function find( User $user = null): JsonResponse
+    #[ParamConverter("User", class: "App\Document\User")]
+    public function find(User $user): JsonResponse
     {
-        if (!$user){
-            return $this->json(null, 404);
-        }
-
         return $this->json($user);
     }
 
@@ -42,7 +40,7 @@ class UserController extends AbstractController
         $form = $this->createForm(UserType::class);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
             $documentManager->persist($user);
             $documentManager->flush();
@@ -61,15 +59,11 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['PUT'])]
-    public function edit(User $user = null ,Request $request, DocumentManager $documentManager): JsonResponse
+    public function edit(User $user, Request $request, DocumentManager $documentManager): JsonResponse
     {
-        if (!$user){
-            return $this->json(null, 404);
-        }
-
         $form = $this->createForm(UserType::class, $user);
         $form->submit($request->toArray());
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $documentManager->persist($user);
             $documentManager->flush();
 
@@ -78,7 +72,7 @@ class UserController extends AbstractController
 
         $errors = $form->getErrors(true);
         $msg = [];
-        foreach ($errors as $error){
+        foreach ($errors as $error) {
             $msg[] = $error->getMessage();
         }
 
@@ -86,12 +80,8 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_remove', methods: ['DELETE'])]
-    public function remove( User $user = null, DocumentManager $documentManager): JsonResponse
+    public function remove(User $user, DocumentManager $documentManager): JsonResponse
     {
-        if (!$user){
-            return $this->json(null, 404);
-        }
-
         $documentManager->remove($user);
         $documentManager->flush();
 
