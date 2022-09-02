@@ -6,7 +6,6 @@ use App\Document\User;
 use App\Form\UserType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,9 +24,14 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_find', methods: ['GET'])]
-    #[ParamConverter("User", class: "App\Document\User")]
-    public function find(User $user): JsonResponse
+    public function find(string $id, DocumentManager $documentManager): JsonResponse
     {
+        $repository = $documentManager->getRepository(User::class);
+        $user = $repository->find($id);
+        if (!$user){
+            return $this->json(null, Response::HTTP_NOT_FOUND);
+        }
+
         return $this->json($user);
     }
 
@@ -39,7 +43,6 @@ class UserController extends AbstractController
     {
         $form = $this->createForm(UserType::class);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $form->getData();
             $documentManager->persist($user);
@@ -59,15 +62,16 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['PUT'])]
-    public function edit(User $user, Request $request, DocumentManager $documentManager): JsonResponse
+    public function edit(string $id, Request $request, DocumentManager $documentManager): JsonResponse
     {
+        $user = $documentManager->getRepository(User::class)->find($id);
         $form = $this->createForm(UserType::class, $user);
         $form->submit($request->toArray());
         if ($form->isSubmitted() && $form->isValid()) {
             $documentManager->persist($user);
             $documentManager->flush();
 
-            return $this->json($user, 201);
+            return $this->json($user, Response::HTTP_CREATED);
         }
 
         $errors = $form->getErrors(true);
@@ -80,11 +84,16 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_remove', methods: ['DELETE'])]
-    public function remove(User $user, DocumentManager $documentManager): JsonResponse
+    public function remove(string $id, DocumentManager $documentManager): JsonResponse
     {
+        $user = $documentManager->getRepository(User::class)->find($id);
+        if (!$user){
+            return $this->json(null, Response::HTTP_NOT_FOUND);
+        }
+
         $documentManager->remove($user);
         $documentManager->flush();
 
-        return $this->json(null);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

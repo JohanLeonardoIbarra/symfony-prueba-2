@@ -33,7 +33,7 @@ class User
 
     #[ODM\Field(type: 'bool')]
     #[Assert\NotNull]
-    private bool $firstBuy = false;
+    private bool $firstBuy;
 
     /**
      * @return bool
@@ -112,4 +112,6 @@ class User
     {
         return $this->id;
     }
+
+
 }

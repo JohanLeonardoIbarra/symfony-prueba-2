@@ -35,7 +35,8 @@ class Order
 
     #[ODM\NotBlank]
     #[ODM\NotNull]
-    private string $userId;
+    #[Assert\Email]
+    private string $userEmail;
 
     /**
      * @return string
@@ -126,14 +127,14 @@ class Order
     /**
      * @return string
      */
-    public function getUserId(): string
+    public function getUserEmail(): string
     {
-        return $this->userId;
+        return $this->userEmail;
     }
 
-    public function setUserId(string $userId): static
+    public function setUserEmail(string $userEmail): static
     {
-        $this->userId = $userId;
+        $this->userEmail = $userEmail;
 
         return $this;
     }

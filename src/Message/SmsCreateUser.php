@@ -5,12 +5,12 @@ namespace App\Message;
 class SmsCreateUser
 {
     private $content;
-    private array $userData;
+    private User $user;
 
-    public function __construct(string $content, array $userData)
+    public function __construct(string $content, User $user)
     {
         $this->content = $content;
-        $this->userData = $userData;
+        $this->user = $user;
     }
 
     public function getContent(): string
@@ -19,10 +19,10 @@ class SmsCreateUser
     }
 
     /**
-     * @return array
+     * @return User
      */
-    public function getUserData(): array
+    public function getUser(): User
     {
-        return $this->userData;
+        return $this->user;
     }
 }

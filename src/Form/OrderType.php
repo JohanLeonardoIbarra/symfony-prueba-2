@@ -15,7 +15,10 @@ class OrderType extends AbstractType
             ->add('productName')
             ->add('discount')
             ->add('unitPrice')
-            ->add('quantity');
+            ->add('quantity')
+            ->add('userEmail')
+            ->add('name')
+            ->add('surname');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
